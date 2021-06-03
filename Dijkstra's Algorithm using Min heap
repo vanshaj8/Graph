@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+#include<vector>
+#include<queue>
+#include<stack>
+#define INF INT_MAX
+using namespace std;
+// Shortest Path in UDAG
+// Dijkstra's Algorithm helps us to find the shortest distance from source to every other node
+// we can use sets and max heap also in this case we have used min heap
+int main()
+{
+	int n,m,source;
+	cin>>n>>m;
+	vector<pair<int,int>>adj[n+1]; // indexed from +1
+	
+	for(int i=0;i<m;i++)
+	{
+		int u,v,wt;
+		cin>>u >> v >> wt;
+		adj[u].push_back({v,wt});
+		adj[v].push_back({u,wt});
+	}
+	
+	cin>>source;
+	
+	
+	// Dijkstras Algorithm begins
+	// Min heap that stores in pair first is distance and second is source node
+	priority_queue<pair<int,int>,vector<pair<int,int> >,greater<pair<int,int> > >pq;
+	
+	// creating a distance array that stores the distance
+	
+	vector<int> dist (n+1,INT_MAX);
+	dist[source]=0;
+	pq.push({0,source}); //(dist,from)
+	
+	while(!pq.empty())
+	{
+		int distt=pq.top().first;
+		int prev=pq.top().second;
+		pq.pop();
+		
+		vector<pair<int,int> >:: iterator it;
+		for(it=adj[prev].begin();it!=adj[prev].end();it++)
+		{
+			int next=it->first;
+			int nextdist=it->second;
+			
+			if(dist[next]> nextdist + dist[prev])
+			{
+				dist[next]=nextdist+dist[prev];
+				pq.push({dist[next],next});
+			}
+		}
+	}
+	
+	cout << "The distances from source, " << source << ", are : \n";
+	for(int i=1;i<=n;i++) cout<<dist[i]<<" ";
+	cout<<"\n";
+	return 0;
+}
