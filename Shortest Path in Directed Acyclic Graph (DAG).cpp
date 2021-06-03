@@ -1,49 +1,71 @@
 #include<bits/stdc++.h>
 #include<vector>
+#include<queue>
+#include<stack>
+#define INF INT_MAX
 using namespace std;
+// Shortest Path in DAG
 
-void findtoposort(int node,int vis[],stack<int>&st,vector<pair<int,int>adj[])
+void findtopo(int node,vector<pair<int,int>>adj[],int vis[],stack<int>&st)
 {
 	vis[node]=1;
-	for(auto it:adj[node])
+	for(auto it: adj[node])
 	{
 		if(!vis[it.first])
 		{
-			findtoposort(it,vis,st,adj);
+			findtopo(it.first,adj,vis,st);
 		}
 	}
 	st.push(node);
 }
-
 void shortestPath(int src,int n,vector<pair<int,int>>adj[])
 {
-	int vis[n]={0}; // initalising the visited by 0
-	
+	int vis[n]={0};
 	stack<int>st;
 	for(int i=0;i<n;i++)
 	{
-		if(!vis[i])
+		if(vis[i]==0)
 		{
-			findtoposort(src,vis,st,adj);
+			findtopo(i,adj,vis,st);
+		}
+	}
+	int dist[n];
+	for(int i=0;i<n;i++) dist[i]=INT_MAX;
+	dist[src]=0;
+
+	while(!st.empty())
+	{
+		int node=st.top();
+		st.pop();
+		if(dist[node]!=INT_MAX)
+		{
+			for(auto it: adj[node])
+			{
+				if(dist[node]+it.second <dist[it.first])
+				{
+					dist[it.first]=dist[node]+it.second;
+				}
+			}
 		}
 	}
 	
-	int dist[n];
-	
+	for(int i=0;i<n;i++)
+	{
+		(dist[i]==INT_MAX) ? cout<<"INFINITY"<<" " : cout<<dist[i]<<" "; 
+	}
 }
 int main()
 {
-
-   int n,m;
-   cin>>n>m;
-   vector<pair<int,int>>adj[n];
-   
-   for(int i=0;i<m;i++)
-   {
-       int u,v,wt;
-	   cin>>u>>v>>wt;
-	   adj[u].push_back({v,wt});	
-   }	
+	int n,m;
+	cin>>n>>m;
+	vector<pair<int,int>>adj[n];
+	
+	for(int i=0;i<m;i++)
+	{
+		int u,v,wt;
+		cin>> u >> v >> wt;
+		adj[u].push_back({v,wt});
+	}
 	
 	shortestPath(0,n,adj);
 	return 0;
